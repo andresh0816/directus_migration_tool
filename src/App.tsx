@@ -17,10 +17,21 @@ function App() {
 
   const [baseServerUrl, setBaseServerUrl] = useState("")
   const [targetServerUrl, setTargetServerUrl] = useState("")
+  const [canNext, setCanNext] = useState(true)
+  
+  const handleReset = () => {
+    setBaseServerUrl("")
+    setTargetServerUrl("")
+    reset()
+  }
 
-  const isLastStep = activeStep === steps.length - 1;
-  const hasCompletedAllSteps = activeStep === steps.length;
-  const bg = useColorModeValue("white", "white");
+  const handleCanNextChange = (value: boolean) => {
+    setCanNext(value)
+  }
+
+  const isLastStep = activeStep === steps.length - 1
+  const hasCompletedAllSteps = activeStep === steps.length
+  const bg = useColorModeValue("white", "white")
 
   return (
     <Flex direction={'column'} justifyContent={'space-between'} alignItems={'center'}>
@@ -45,7 +56,8 @@ function App() {
                 baseServerUrl={baseServerUrl}
                 setBaseServerUrl={setBaseServerUrl}
                 targetServerUrl={targetServerUrl}
-                setTargetServerUrl={setTargetServerUrl} />
+                setTargetServerUrl={setTargetServerUrl}
+                onValidateForm={handleCanNextChange} />
               }
             </Box>
           </Step>
@@ -60,7 +72,7 @@ function App() {
       )}
       <Flex width="100%" justify="flex-end" gap={4}>
         {hasCompletedAllSteps ? (
-          <Button size="md" onClick={reset}>
+          <Button size="md" onClick={handleReset}>
             Reset
           </Button>
         ) : (
@@ -74,7 +86,7 @@ function App() {
             >
               Back
             </Button>
-            <Button rightIcon={isLastStep ? <CheckIcon /> : undefined} colorScheme={isLastStep ? 'teal' : 'gray'} size="md" onClick={nextStep}>
+            <Button isDisabled={canNext} rightIcon={isLastStep ? <CheckIcon /> : undefined} colorScheme={isLastStep ? 'teal' : 'gray'} size="md" onClick={nextStep}>
               {isLastStep ? "Complete" : "Next"}
             </Button>
           </>

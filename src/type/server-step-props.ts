@@ -6,4 +6,5 @@ export interface IServerStepComponentProps {
     setBaseServerUrl: Dispatch<SetStateAction<string>>,
     targetServerUrl: string,
     setTargetServerUrl: Dispatch<SetStateAction<string>>
+    onValidateForm: (value: boolean) => void
 }

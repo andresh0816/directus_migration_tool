@@ -46,8 +46,8 @@ const indexHtml = path.join(RENDERER_DIST, 'index.html')
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
-    width: 884,
-    height: 708,
+    width: 890,
+    height: 760,
     resizable: false,
     icon: path.join(process.env.VITE_PUBLIC, 'favicon.ico'),
     webPreferences: {
@@ -110,8 +110,8 @@ app.on('activate', () => {
 // New window example arg: new windows url
 ipcMain.handle('open-win', (_, arg) => {
   const childWindow = new BrowserWindow({
-    width: 884,
-    height: 708,
+    width: 890,
+    height: 760,
     resizable: false,
     webPreferences: {
       preload,
