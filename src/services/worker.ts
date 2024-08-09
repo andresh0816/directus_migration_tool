@@ -2,23 +2,29 @@ import { IDirectusLoginRequest, IDirectusLoginResponse } from '@/type/authentica
 import { IPingResponse } from '@/type/ping-response'
 import axios from 'axios'
 
-const validateServers = async (baseServerUrl: string, targetServerUrl: string): Promise<IPingResponse> => {
-    const pingBaseServer = await axios.get(baseServerUrl + '/server/ping')
-    const pingTargetServer = await axios.get(targetServerUrl + '/server/ping')
-    
-    if (pingBaseServer.status === 200 && pingTargetServer.status === 200) {
+export const validateServers = async (baseServerUrl: string, targetServerUrl: string): Promise<IPingResponse> => {
+    try {
+        const pingBaseServer = await axios.get(baseServerUrl + '/server/ping')
+        const pingTargetServer = await axios.get(targetServerUrl + '/server/ping')
+        
+        if (pingBaseServer.status === 200 && pingTargetServer.status === 200) {
+            return {
+                done: true
+            }
+        }
+
         return {
-            done: true
+            done: false,
+            failedServer: pingBaseServer.status === 200 ? "Target server is not available" : "Base server is not available"
         }
     }
-
-    return {
-        done: false,
-        failedServer: pingBaseServer.status === 200 ? "Target server is not available" : "Base server is not available"
+    catch (error: any) {
+        sessionStorage.setItem('server-check-error', JSON.stringify(error))
+        throw error
     }
 }
 
-const authenticateServers = async (baseServerRequest: IDirectusLoginRequest, targetServerRequest: IDirectusLoginRequest): Promise<IDirectusLoginResponse> => {
+export const authenticateServers = async (baseServerRequest: IDirectusLoginRequest, targetServerRequest: IDirectusLoginRequest): Promise<IDirectusLoginResponse> => {
     const baseServerResponse = await axios.post(baseServerRequest.server + '/auth/login', baseServerRequest.account)
     const targetServerResponse = await axios.post(targetServerRequest.server + '/auth/login', targetServerRequest.account)
 
@@ -37,7 +43,7 @@ const authenticateServers = async (baseServerRequest: IDirectusLoginRequest, tar
     }
 }
 
-const getSnapshot = async (accessToken: string, baseServerUrl: string): Promise<any> => {
+export const getSnapshot = async (accessToken: string, baseServerUrl: string): Promise<any> => {
     const response = await axios.get(baseServerUrl + '/schema/snapshot', {
         headers: {
             Authorization: `Bearer ${accessToken}`
@@ -51,7 +57,7 @@ const getSnapshot = async (accessToken: string, baseServerUrl: string): Promise<
     return null
 }
 
-const getDiff = async (accessToken: string, targetServerUrl: string, snapshot: any): Promise<any> => {
+export const getDiff = async (accessToken: string, targetServerUrl: string, snapshot: any): Promise<any> => {
     const response = await axios.post(targetServerUrl + '/schema/diff?force=true', snapshot, {
         headers: {
             Authorization: `Bearer ${accessToken}`
@@ -65,7 +71,7 @@ const getDiff = async (accessToken: string, targetServerUrl: string, snapshot: a
     return null
 }
 
-const applyDiff = async (accessToken: string, targetServerUrl: string, difference: any): Promise<boolean> => {
+export const applyDiff = async (accessToken: string, targetServerUrl: string, difference: any): Promise<boolean> => {
     const response = await axios.post(targetServerUrl + '/schema/apply?force=true', difference, {
         headers: {
             Authorization: `Bearer ${accessToken}`
