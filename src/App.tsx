@@ -5,12 +5,14 @@ import { Steps, useSteps, Step } from 'chakra-ui-steps';
 import { createElement, useState } from 'react';
 import ServerStepComponent from './components/server-step/server-step';
 import AuthenticationStepComponent from './components/authentication-step/authentication-step';
+import SendStepComponent from './components/send-step/send-step';
+import WorkerComponent from './components/worker/worker';
 
 function App() {
   const [steps, setSteps] = useState([
     { label: "Servers config", loading: false, component: ServerStepComponent },
     { label: "Authentication config", loading: false, component: AuthenticationStepComponent },
-    { label: "Finish", loading: false, component: null }
+    { label: "Finish", loading: false, component: SendStepComponent }
   ]);
   const { nextStep, prevStep, reset, activeStep } = useSteps({
     initialStep: 0,
@@ -25,8 +27,6 @@ function App() {
   const [targetServerAdminEmail, setTargetServerAdminEmail] = useState("")
   const [baseServerAdminPassword, setBaseServerAdminPassword] = useState("")
   const [targetServerAdminPassword, setTargetServerAdminPassword] = useState("")
-  const [baseServerAccessToken, setBaseServerAccessToken] = useState("")
-  const [targetServerAccessToken, setTargetServerAccessToken] = useState("")
   
   const handleReset = () => {
     setBaseServerUrl("")
@@ -36,11 +36,6 @@ function App() {
 
   const handleCanNextChange = (value: boolean) => {
     setCanNext(value)
-  }
-
-  const storeTokens = (baseServerToken: string, targetServerToken: string) => {
-    setBaseServerAccessToken(baseServerToken)
-    setTargetServerAccessToken(targetServerToken)
   }
 
   const isLastStep = activeStep === steps.length - 1
@@ -88,21 +83,29 @@ function App() {
                   targetAdminPasswordValue={targetServerAdminPassword}
                   canNextSetter={handleCanNextChange} />
               }
+              {
+                step.component === SendStepComponent &&
+                <SendStepComponent />
+              }
             </Box>
           </Step>
         ))}
       </Steps>
-      {hasCompletedAllSteps && (
-        <Box sx={{ bg, my: 8, p: 8, rounded: "md" }}>
-          <Heading fontSize="xl" textAlign={"center"}>
-            Woohoo! All steps completed! 🎉
-          </Heading>
-        </Box>
-      )}
+      {hasCompletedAllSteps && 
+        <WorkerComponent
+          baseServerUrl={baseServerUrl} 
+          targetServerUrl={targetServerUrl}
+          baseAdminEmailValue={baseServerAdminEmail}
+          baseAdminPasswordValue={baseServerAdminPassword}
+          targetAdminEmailValue={targetServerAdminEmail}
+          targetAdminPasswordValue={targetServerAdminPassword}
+          handleCanNextChange={handleCanNextChange}
+        />
+      }
       <Flex width="100%" justify="flex-end" gap={4}>
         {hasCompletedAllSteps ? (
-          <Button size="md" onClick={handleReset}>
-            Reset
+          canNext && <Button size="md" onClick={handleReset}>
+            Back to start
           </Button>
         ) : (
           <>
