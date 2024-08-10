@@ -4,11 +4,12 @@ import './App.css'
 import { Steps, useSteps, Step } from 'chakra-ui-steps';
 import { createElement, useState } from 'react';
 import ServerStepComponent from './components/server-step/server-step';
+import AuthenticationStepComponent from './components/authentication-step/authentication-step';
 
 function App() {
   const [steps, setSteps] = useState([
     { label: "Servers config", loading: false, component: ServerStepComponent },
-    { label: "Authentication config", loading: false, component: null },
+    { label: "Authentication config", loading: false, component: AuthenticationStepComponent },
     { label: "Finish", loading: false, component: null }
   ]);
   const { nextStep, prevStep, reset, activeStep } = useSteps({
@@ -18,6 +19,14 @@ function App() {
   const [baseServerUrl, setBaseServerUrl] = useState("")
   const [targetServerUrl, setTargetServerUrl] = useState("")
   const [canNext, setCanNext] = useState(true)
+
+
+  const [baseServerAdminEmail, setBaseServerAdminEmail] = useState("")
+  const [targetServerAdminEmail, setTargetServerAdminEmail] = useState("")
+  const [baseServerAdminPassword, setBaseServerAdminPassword] = useState("")
+  const [targetServerAdminPassword, setTargetServerAdminPassword] = useState("")
+  const [baseServerAccessToken, setBaseServerAccessToken] = useState("")
+  const [targetServerAccessToken, setTargetServerAccessToken] = useState("")
   
   const handleReset = () => {
     setBaseServerUrl("")
@@ -27,6 +36,11 @@ function App() {
 
   const handleCanNextChange = (value: boolean) => {
     setCanNext(value)
+  }
+
+  const storeTokens = (baseServerToken: string, targetServerToken: string) => {
+    setBaseServerAccessToken(baseServerToken)
+    setTargetServerAccessToken(targetServerToken)
   }
 
   const isLastStep = activeStep === steps.length - 1
@@ -45,10 +59,10 @@ function App() {
       </Flex>
       <div className='stepper-container'>
       <Flex flexDir="column" width="100%">
-      <Steps variant={'circles'} colorScheme="teal" activeStep={activeStep}>
+      <Steps width="100%" variant={'circles'} colorScheme="teal" activeStep={activeStep}>
         {steps.map((step, index) => (
           <Step label={step.label} key={step.label}>
-            <Box sx={{ px: 8, bg, mb: 8, rounded: "md" }}>
+            <Box sx={{ w: "100%", h: "100%", p: 0, bg, mb: 8, rounded: "md" }}>
               {
               step.component === ServerStepComponent && 
               <ServerStepComponent 
@@ -58,6 +72,21 @@ function App() {
                 targetServerUrl={targetServerUrl}
                 setTargetServerUrl={setTargetServerUrl}
                 onValidateForm={handleCanNextChange} />
+              }
+              {
+                step.component === AuthenticationStepComponent &&
+                <AuthenticationStepComponent 
+                  baseServerUrl={baseServerUrl} 
+                  targetServerUrl={targetServerUrl}
+                  baseAdminEmailSetter={setBaseServerAdminEmail}
+                  baseAdminPasswordSetter={setBaseServerAdminPassword}
+                  targetAdminEmailSetter={setTargetServerAdminEmail}
+                  targetAdminPasswordSetter={setTargetServerAdminPassword}
+                  baseAdminEmailValue={baseServerAdminEmail}
+                  baseAdminPasswordValue={baseServerAdminPassword}
+                  targetAdminEmailValue={targetServerAdminEmail}
+                  targetAdminPasswordValue={targetServerAdminPassword}
+                  canNextSetter={handleCanNextChange} />
               }
             </Box>
           </Step>

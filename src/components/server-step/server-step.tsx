@@ -23,7 +23,9 @@ const ServerStepComponent: FC<IServerStepComponentProps> = (props: IServerStepCo
 
     const toast = useToast()
 
-    props.onValidateForm(invalidBaseServerUrl || invalidTargetServerUrl || !formIsValid)
+    useEffect(() => {
+        props.onValidateForm(invalidBaseServerUrl || invalidTargetServerUrl || !formIsValid)
+    }, [invalidBaseServerUrl, invalidTargetServerUrl, formIsValid])
 
     const checkServers = () => {
         toast.promise(validateServers(props.baseServerUrl, props.targetServerUrl), {
