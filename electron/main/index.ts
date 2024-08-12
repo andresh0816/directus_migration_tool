@@ -63,7 +63,6 @@ async function createWindow() {
 
   if (VITE_DEV_SERVER_URL) { // #298
     win.loadURL(VITE_DEV_SERVER_URL)
-    win.setMenu(null)
     // Open devTool if the app is not packaged
   } else {
     win.loadFile(indexHtml)

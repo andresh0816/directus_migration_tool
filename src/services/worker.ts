@@ -25,62 +25,82 @@ export const validateServers = async (baseServerUrl: string, targetServerUrl: st
 }
 
 export const authenticateServers = async (baseServerRequest: IDirectusLoginRequest, targetServerRequest: IDirectusLoginRequest): Promise<IDirectusLoginResponse> => {
-    const baseServerResponse = await axios.post(baseServerRequest.server + '/auth/login', baseServerRequest.account)
-    const targetServerResponse = await axios.post(targetServerRequest.server + '/auth/login', targetServerRequest.account)
+    try {
+        const baseServerResponse = await axios.post(baseServerRequest.server + '/auth/login', baseServerRequest.account)
+        const targetServerResponse = await axios.post(targetServerRequest.server + '/auth/login', targetServerRequest.account)
 
-    if (baseServerResponse.status === 200 && targetServerResponse.status === 200) {
+        if (baseServerResponse.status === 200 && targetServerResponse.status === 200) {
+            return {
+                baseServerToken: baseServerResponse.data.data.access_token,
+                targetServerToken: targetServerResponse.data.data.access_token,
+            }
+        }
+
         return {
-            baseServerToken: baseServerResponse.data.data.access_token,
-            targetServerToken: targetServerResponse.data.data.access_token,
+            error: {
+                message: baseServerResponse.status === 200 ? targetServerResponse.data.errors[0].message : baseServerResponse.data.errors[0].message,
+                from: baseServerResponse.status === 200 ? "target" : "base"
+            }
         }
     }
-
-    return {
-        error: {
-            message: baseServerResponse.status === 200 ? targetServerResponse.data.errors[0].message : baseServerResponse.data.errors[0].message,
-            from: baseServerResponse.status === 200 ? "target" : "base"
-        }
+    catch (error: any) {
+        throw error
     }
 }
 
 export const getSnapshot = async (accessToken: string, baseServerUrl: string): Promise<any> => {
-    const response = await axios.get(baseServerUrl + '/schema/snapshot', {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
+    try {
+        const response = await axios.get(baseServerUrl + '/schema/snapshot', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+    
+        if (response.status === 200) {
+            return response.data.data
         }
-    })
-
-    if (response.status === 200) {
-        return response.data.data
+    
+        return null
     }
-
-    return null
+    catch (error: any) {
+        throw error
+    }
 }
 
 export const getDiff = async (accessToken: string, targetServerUrl: string, snapshot: any): Promise<any> => {
-    const response = await axios.post(targetServerUrl + '/schema/diff?force=true', snapshot, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
-
-    if (response.status === 200) {
-        return response.data.data
-    }
+    try {
+        const response = await axios.post(targetServerUrl + '/schema/diff?force=true', snapshot, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
     
-    return null
+        if (response.status === 200) {
+            return response.data.data
+        }
+        
+        return null
+    }
+    catch(error: any) {
+        throw error
+    }
 }
 
 export const applyDiff = async (accessToken: string, targetServerUrl: string, difference: any): Promise<boolean> => {
-    const response = await axios.post(targetServerUrl + '/schema/apply?force=true', difference, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
+    try {
+        const response = await axios.post(targetServerUrl + '/schema/apply?force=true', difference, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+    
+        if (response.status === 200) {
+            return true
         }
-    })
-
-    if (response.status === 200) {
-        return true
+    
+        return false
     }
-
-    return false
+    catch(error: any) {
+        throw error
+    }
 }

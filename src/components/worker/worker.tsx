@@ -1,8 +1,8 @@
 import { applyDiff, authenticateServers, getDiff, getSnapshot } from "@/services/worker";
 import { IDirectusLoginRequest } from "@/type/authentication";
 import { IWorkerComponentProps } from "@/type/worker-component-props";
-import { Box, Center, Flex, Heading, Spinner, Text } from "@chakra-ui/react";
-import { FC, useEffect, useState } from "react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Box, Button, Center, Flex, Heading, Spinner, Text, useToast } from "@chakra-ui/react";
+import { FC, useEffect, useRef, useState } from "react";
 
 const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps) => {
     const [loading, setLoading] = useState(true)
@@ -11,6 +11,22 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
     const [success, setSuccess] = useState(false)
     const [baseServerAccessToken, setBaseServerAccessToken] = useState("")
     const [targetServerAccessToken, setTargetServerAccessToken] = useState("")
+    const toast = useToast()
+    const linkRef = useRef<HTMLAnchorElement>(null);
+
+    const downloadLogs = () => {
+        const data = sessionStorage.getItem("process-errors")
+        if (data) {
+            const blob = new Blob([data], { type: "text/plain"})
+            const url = window.URL.createObjectURL(blob)
+            if (linkRef.current) {
+                linkRef.current.href = url;
+                linkRef.current.download = 'example.txt';
+                linkRef.current.click();
+                window.URL.revokeObjectURL(url);
+              }
+        }
+    }
 
     const work = (data: IWorkerComponentProps) => {
         const baseLoginRequest: IDirectusLoginRequest = {
@@ -31,7 +47,7 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
 
         setStatus("Authenticating servers")
         authenticateServers(baseLoginRequest, targetLoginRequest).then((loginResponse) => {
-            if (loginResponse.baseServerToken && loginResponse.targetServerToken) {
+            if (loginResponse.baseServerToken && loginResponse.targetServerToken && loginResponse.baseServerToken !== "" && loginResponse.targetServerToken !== "") {
                 setBaseServerAccessToken(loginResponse.baseServerToken)
                 setTargetServerAccessToken(loginResponse.targetServerToken)
                 setStatus("Getting base server current schema and snapshot")
@@ -60,18 +76,32 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
             setLoading(false)
             setSuccess(true)
             setStatus("")
+            toast({
+                status: "success",
+                title: "Process finished successfully"
+            })
 
         }).catch((error: any) => {
             setFailed(true)
+            toast({
+                status: "error",
+                title: "Process failed"
+            })
+            sessionStorage.setItem("process-errors", JSON.stringify(error))
             throw error
         })
     }
+
+    useEffect(() => {
+        work(props)
+    }, [])
 
     useEffect(() => {
         props.handleCanNextChange(success)
     }, [success])
 
     return (
+        loading ?
         <Box sx={{ bg: "teal.100", my: 8, p: 8, rounded: "md" }}>
             <Center>
                 <Flex gap={4} direction="column" alignItems="center" justifyContent="center">
@@ -79,7 +109,27 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
                     <Text fontSize='lg'>{status}</Text>
                 </Flex>
             </Center>
-        </Box>
+        </Box> :
+        <Alert
+        status={success ? "success" : "error"}
+        variant='subtle'
+        flexDirection='column'
+        alignItems='center'
+        justifyContent='center'
+        textAlign='center'
+        height='200px'
+        mt={10}
+        >
+            <AlertIcon boxSize='40px' mr={0} />
+            <AlertTitle mt={4} mb={1} fontSize='lg'>
+                {success ? "Migration Completed" : "Migration Failed"}
+            </AlertTitle>
+            <AlertDescription maxWidth='sm'>
+                {success ? "The migration process has finished successfully. 🎉" 
+                         : "The migration process has failed. Download the logs to see what happened" + <Button onClick={downloadLogs} size="md" colorScheme="teal">Download logs</Button>
+                }
+            </AlertDescription>
+        </Alert>
     )
 }
 
