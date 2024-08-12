@@ -7,7 +7,6 @@ import { FC, useEffect, useRef, useState } from "react";
 const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps) => {
     const [loading, setLoading] = useState(true)
     const [status, setStatus] = useState("Initializating migration")
-    const [failed, setFailed] = useState(false)
     const [success, setSuccess] = useState(false)
     const [baseServerAccessToken, setBaseServerAccessToken] = useState("")
     const [targetServerAccessToken, setTargetServerAccessToken] = useState("")
@@ -21,7 +20,7 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
             const url = window.URL.createObjectURL(blob)
             if (linkRef.current) {
                 linkRef.current.href = url;
-                linkRef.current.download = 'example.txt';
+                linkRef.current.download = 'logs.txt';
                 linkRef.current.click();
                 window.URL.revokeObjectURL(url);
               }
@@ -82,12 +81,12 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
             })
 
         }).catch((error: any) => {
-            setFailed(true)
             toast({
                 status: "error",
                 title: "Process failed"
             })
             sessionStorage.setItem("process-errors", JSON.stringify(error))
+            setLoading(false)
             throw error
         })
     }
@@ -117,7 +116,7 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
         alignItems='center'
         justifyContent='center'
         textAlign='center'
-        height='200px'
+        height='250px'
         mt={10}
         >
             <AlertIcon boxSize='40px' mr={0} />
@@ -125,9 +124,24 @@ const WorkerComponent: FC<IWorkerComponentProps> = (props: IWorkerComponentProps
                 {success ? "Migration Completed" : "Migration Failed"}
             </AlertTitle>
             <AlertDescription maxWidth='sm'>
-                {success ? "The migration process has finished successfully. 🎉" 
-                         : "The migration process has failed. Download the logs to see what happened" + <Button onClick={downloadLogs} size="md" colorScheme="teal">Download logs</Button>
-                }
+                {success ? (
+                    "The migration process has finished successfully. 🎉"
+                ) : (
+                    <>
+                        <Flex gap={4} direction="column" alignItems="center" justifyContent="center">
+                            "The migration process has failed. Download the logs to see what happened."
+                            <Flex gap={4} direction="row" alignItems="center">
+                                <Button onClick={downloadLogs} size="md" colorScheme="teal">
+                                    Download logs
+                                </Button>
+                                <Button onClick={props.prevHandler} size="md" colorScheme="gray">
+                                    Check configuration
+                                </Button>
+                            </Flex>
+                            <a ref={linkRef} style={{ display: 'none' }}>Download</a>
+                        </Flex>
+                    </>
+                )}
             </AlertDescription>
         </Alert>
     )

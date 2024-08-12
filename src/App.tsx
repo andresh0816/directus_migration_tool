@@ -100,6 +100,7 @@ function App() {
           targetAdminEmailValue={targetServerAdminEmail}
           targetAdminPasswordValue={targetServerAdminPassword}
           handleCanNextChange={handleCanNextChange}
+          prevHandler={prevStep}
         />
       }
       <Flex width="100%" justify="flex-end" gap={4}>

@@ -6,4 +6,5 @@ export interface IWorkerComponentProps {
     targetAdminEmailValue: string
     targetAdminPasswordValue: string
     handleCanNextChange: (value: boolean) => void
+    prevHandler: () => void
 }
