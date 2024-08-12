@@ -1,8 +1,6 @@
-/**
- * @see https://www.electron.build/configuration/configuration
- */
 {
   "appId": "com.bytars.directus.migration",
+  "productName": "DirectusMigrationTool",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -37,8 +35,9 @@
   },
   "publish": {
     "provider": "github",
-    "channel": "latest",
-    "url": "https://github.com/andresh0816/directus_migration_tool",
-    "private": true
+    "owner": "andresh0816",
+    "repo": "directus_migration_tool",
+    "private": true,
+    "releaseType": "release"
   }
 }
