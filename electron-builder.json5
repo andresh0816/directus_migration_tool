@@ -39,7 +39,7 @@
   },
   "publish": {
     "provider": "generic",
-    "repo": "directus_migration_tool",
+    "repo": "https://github.com/andresh0816/directus_migration_tool",
     "owner": "andresdev16",
     "private": true,
     "channel": "latest",
