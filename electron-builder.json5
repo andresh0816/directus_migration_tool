@@ -3,8 +3,6 @@
  */
 {
   "appId": "com.bytars.migrator",
-  "productName": "Directus Migration Tool",
-  "copyright": "Copyright © 2024 Bytars",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -39,7 +37,7 @@
   },
   "publish": {
     "provider": "generic",
-    "repo": "https://github.com/andresh0816/directus_migration_tool",
+    "url": "https://github.com/andresh0816/directus_migration_tool",
     "owner": "andresdev16",
     "private": true,
     "channel": "latest",
