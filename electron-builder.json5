@@ -38,7 +38,7 @@
     "deleteAppDataOnUninstall": false
   },
   "publish": {
-    "provider": "github",
+    "provider": "generic",
     "repo": "directus_migration_tool",
     "owner": "andresdev16",
     "private": true,
