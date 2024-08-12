@@ -36,7 +36,7 @@
     "deleteAppDataOnUninstall": false
   },
   "publish": {
-    "provider": "generic",
+    "provider": "github",
     "channel": "latest",
     "url": "https://github.com/andresh0816/directus_migration_tool",
     "private": true
