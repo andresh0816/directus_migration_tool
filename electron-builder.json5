@@ -2,7 +2,7 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "com.bytars.migrator",
+  "appId": "com.bytars.directus.migration",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -37,10 +37,8 @@
   },
   "publish": {
     "provider": "generic",
-    "url": "https://github.com/andresh0816/directus_migration_tool",
-    "owner": "andresdev16",
-    "private": true,
     "channel": "latest",
-    "releaseType": "release",
+    "url": "https://github.com/andresh0816/directus_migration_tool",
+    "private": true
   }
 }
