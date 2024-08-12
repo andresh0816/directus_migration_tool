@@ -2,7 +2,9 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "YourAppID",
+  "appId": "com.bytars.migrator",
+  "productName": "Directus Migration Tool",
+  "copyright": "Copyright © 2024 Bytars",
   "asar": true,
   "directories": {
     "output": "release/${version}"
@@ -36,8 +38,12 @@
     "deleteAppDataOnUninstall": false
   },
   "publish": {
-    "provider": "generic",
+    "provider": "github",
+    "repo": "directus_migration_tool",
+    "owner": "andresdev16",
+    "private": true,
     "channel": "latest",
-    "url": "https://github.com/electron-vite/electron-vite-react/releases/download/v0.9.9/"
+    "releaseType": "release",
+    "url": "https://github.com/andresh0816/directus_migration_tool"
   }
 }
