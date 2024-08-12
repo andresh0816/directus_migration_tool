@@ -44,6 +44,5 @@
     "private": true,
     "channel": "latest",
     "releaseType": "release",
-    "url": "https://github.com/andresh0816/directus_migration_tool"
   }
 }
